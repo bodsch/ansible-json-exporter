@@ -1,0 +1,25 @@
+---
+
+- name: daemon-reload
+  systemd:
+    daemon_reload: true
+    force: true
+  notify: restart json_exporter
+  when:
+    - ansible_service_mgr == 'systemd'
+
+- name: verify configuration
+  become: true
+  command: |
+    json_exporter \
+      --config.check \
+      --config.file={{ json_exporter_config_dir }}/config.yml
+
+- name: restart json_exporter
+  become: true
+  service:
+    name: json_exporter
+    state: restarted
+    daemon_reload: true
+
+...

@@ -1,0 +1,24 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+
+GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}
+
+OPTIONS="
+  --config.file={{ json_exporter_config_dir }}/config.yml \
+  --log.level={{ json_exporter_logging.level | default('info') }} \
+  --web.listen-address={{ json_exporter_web.http_listen_address | default('127.0.0.1') }}:{{ json_exporter_web.http_listen_port | default('7979') }}
+"
+
+# > ./json_exporter --help
+# usage: json_exporter [<flags>]
+#
+# Flags:
+#   -h, --help                    Show context-sensitive help (also try --help-long and --help-man).
+#       --config.file=config.yml  JSON exporter configuration file.
+#       --web.listen-address=":7979"
+#                                 The address to listen on for HTTP requests.
+#       --config.check            If true validate the config file and then exit.
+#       --web.config=""           [EXPERIMENTAL] Path to config yaml file that can enable TLS or authentication.
+#       --log.level=info          Only log messages with the given severity or above. One of: [debug, info, warn, error]
+#       --log.format=logfmt       Output format of log messages. One of: [logfmt, json]
+#       --version                 Show application version.

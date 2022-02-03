@@ -1,0 +1,28 @@
+---
+
+json_exporter_version: '0.4.0'
+json_exporter_nginx_plus: false
+
+json_exporter_system_group: json-exporter
+json_exporter_system_user: "{{ json_exporter_system_group }}"
+json_exporter_config_dir: /etc/json_exporter
+
+json_exporter_logging:
+  level: warn
+
+json_exporter_web:
+  http_listen_address: "0.0.0.0"
+  http_listen_port: "7979"
+
+# https://github.com/prometheus-community/json_exporter/releases/download/v0.4.0/json_exporter-0.4.0.linux-amd64.tar.gz
+
+json_exporter_release:
+  download_url: https://github.com/prometheus-community/json_exporter/releases
+  file: json_exporter-{{ json_exporter_version }}.linux-{{ go_arch }}.tar.gz
+
+json_exporter_config:
+  metrics: []
+
+json_exporter_bin: /bin/json_exporter
+
+...

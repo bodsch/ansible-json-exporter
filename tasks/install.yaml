@@ -1,0 +1,31 @@
+---
+
+- name: propagate json_exporter
+  copy:
+    src: "{{ json_exporter_local_tmp_directory }}/json_exporter-{{ json_exporter_version }}.linux-{{ go_arch }}/json_exporter"
+    dest: "/usr/local/bin/json_exporter_{{ json_exporter_version }}"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: create link from json_exporter_{{ json_exporter_version }}
+  file:
+    src: "/usr/local/bin/json_exporter_{{ json_exporter_version }}"
+    dest: "{{ json_exporter_bin }}"
+    state: link
+    force: true
+  notify:
+    - restart json_exporter
+
+- name: create the json_exporter systemd service file
+  template:
+    src: systemd/json_exporter.service.j2
+    dest: "{{ systemd_lib_directory }}/json_exporter.service"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - daemon-reload
+    - restart json_exporter
+
+...

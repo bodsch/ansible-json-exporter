@@ -1,0 +1,34 @@
+---
+
+- name: create json_exporter configuration directory
+  file:
+    path: "{{ json_exporter_config_dir }}"
+    state: directory
+    owner: root
+    group: "{{ json_exporter_system_group }}"
+    mode: 0770
+
+- name: create systemd json_exporter config
+  template:
+    src: json_exporter.j2
+    dest: "{{ json_exporter_defaults_directory }}/json_exporter"
+    mode: 0644
+  notify:
+    - restart json_exporter
+
+- name: create json_exporter configuration
+  template:
+    src: "config.yml.j2"
+    dest: "{{ json_exporter_config_dir }}/config.yml"
+    force: true
+    owner: root
+    group: "{{ json_exporter_system_group }}"
+    mode: 0640
+  notify:
+    - verify configuration
+    - restart json_exporter
+
+- name: flush handlers
+  meta: flush_handlers
+
+...
