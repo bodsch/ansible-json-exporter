@@ -1,7 +1,7 @@
 ---
 
 json_exporter_logging:
-  level: debug
+  level: warn
 
 json_exporter_config:
   - name: example_global_value
