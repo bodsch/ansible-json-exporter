@@ -1,28 +1,31 @@
 ---
 
-- import_tasks: prepare.yaml
+- name: prepare
+  import_tasks: prepare.yaml
   tags:
     - json_exporter_install
     - json_exporter_configure
     - json_exporter_run
 
-- import_tasks: download.yaml
-  become: true
+- name: download archive
+  import_tasks: download.yaml
   tags:
     - json_exporter_install
+  when:
+    - not stat_json_exporter_binary.stat.exists
 
-- name: install nginx exporter
+- name: install
   import_tasks: install.yaml
   tags:
     - json_exporter_install
 
-- name: create nginx exporter config
+- name: configure
   import_tasks: configure.yaml
   tags:
     - json_exporter_configure
 
-- import_tasks: service.yaml
-  become: true
+- name: service
+  import_tasks: service.yaml
   tags:
     - json_exporter_run
     - json_exporter_configure

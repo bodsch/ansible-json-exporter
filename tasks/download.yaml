@@ -2,7 +2,7 @@
 
 - name: download json_exporter binary to local folder
   become: false
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ json_exporter_delegate_to }}"
   get_url:
     url: "{{ json_exporter_release.download_url }}/download/v{{ json_exporter_version }}/{{ json_exporter_release.file }}"
     dest: "{{ json_exporter_local_tmp_directory }}/json_exporter-{{ json_exporter_version }}.tar.gz"
@@ -14,7 +14,7 @@
 
 - name: extract json_exporter archive
   become: false
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ json_exporter_delegate_to }}"
   unarchive:
     src: "{{ json_exporter_local_tmp_directory }}/json_exporter-{{ json_exporter_version }}.tar.gz"
     dest: "{{ json_exporter_local_tmp_directory }}/"

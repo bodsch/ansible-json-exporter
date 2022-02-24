@@ -7,6 +7,8 @@ json_exporter_system_group: json-exporter
 json_exporter_system_user: "{{ json_exporter_system_group }}"
 json_exporter_config_dir: /etc/json_exporter
 
+json_exporter_direct_download: false
+
 json_exporter_logging:
   level: warn
 
@@ -20,9 +22,6 @@ json_exporter_release:
   download_url: https://github.com/prometheus-community/json_exporter/releases
   file: json_exporter-{{ json_exporter_version }}.linux-{{ go_arch }}.tar.gz
 
-json_exporter_config:
-  metrics: []
-
-json_exporter_bin: /bin/json_exporter
+json_exporter_config: []
 
 ...

@@ -22,38 +22,69 @@
   package:
     update_cache: true
 
+- name: define delegate instance for download handling
+  set_fact:
+    json_exporter_delegate_to: "{{ ansible_host }}"
+    json_exporter_local_tmp_directory: "{{
+        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+        default('/var/cache/ansible/json_exporter', true) }}/{{ json_exporter_version }}"
+  when:
+    - json_exporter_direct_download
+
 - name: install dependency
   package:
     name: "{{ json_exporter_requirements }}"
     state: present
 
-- name: create local tmp directory
+- name: detect installed json_exporter binary
+  stat:
+    path: "{{ json_exporter_install_path }}/json_exporter"
+  register: stat_json_exporter_binary
+
+- name: create download directory
   become: false
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ json_exporter_delegate_to }}"
   file:
     path: "{{ json_exporter_local_tmp_directory }}"
     state: directory
     mode: 0750
 
-- name: Create json_exporter group
-  group:
-    name: "{{ json_exporter_system_group }}"
-    state: present
-    system: true
-  when:
-    - json_exporter_system_group != "root"
+- name: user and group handling
+  block:
+    - name: create json_exporter group
+      group:
+        name: "{{ json_exporter_system_group }}"
+        state: present
+        system: true
 
-- name: Create json_exporter user
-  user:
-    name: "{{ json_exporter_system_user }}"
-    groups: "{{ json_exporter_system_group }}"
-    append: true
-    shell: /usr/sbin/nologin
-    system: true
-    createhome: false
-    home: /nonexistent
+    - name: create json_exporter user
+      user:
+        name: "{{ json_exporter_system_user }}"
+        groups: "{{ json_exporter_system_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        createhome: false
+        home: /nonexistent
   when:
     - json_exporter_system_user != "root"
+
+- name: create install directory
+  file:
+    path: "{{ json_exporter_install_path }}"
+    state: directory
+    owner: "{{ json_exporter_system_user }}"
+    group: "{{ json_exporter_system_group }}"
+    mode: 0755
+
+- name: fix directory rights for {{ json_exporter_install_path | dirname }}
+  file:
+    path: "{{ json_exporter_install_path | dirname }}"
+    state: directory
+    owner: "{{ json_exporter_system_user }}"
+    group: "{{ json_exporter_system_group }}"
+    mode: 0755
+    recurse: true
 
 # - name: merge json_exporter configuration between defaults and custom
 #   set_fact:

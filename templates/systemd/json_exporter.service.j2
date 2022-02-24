@@ -13,7 +13,7 @@ User        = {{ json_exporter_system_user }}
 Group       = {{ json_exporter_system_group }}
 
 ExecReload  = /bin/kill -HUP $MAINPID
-ExecStart   = {{ json_exporter_bin }} $OPTIONS
+ExecStart   = /usr/bin/json_exporter $OPTIONS
 
 SyslogIdentifier = json_exporter
 Restart     = always
