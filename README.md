@@ -59,7 +59,7 @@ json_exporter_logging:
 
 ```yaml
 json_exporter_web:
-  listen_address: "0.0.0.0"
+  listen_address: "127.0.0.1"
   listen_port: "7979"
 ```
 
