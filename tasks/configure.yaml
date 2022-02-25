@@ -11,9 +11,10 @@
 - name: create systemd json_exporter config
   template:
     src: json_exporter.j2
-    dest: "{{ json_exporter_defaults_directory }}/json_exporter"
+    dest: "{{ json_exporter_config_directory }}/json_exporter"
     mode: 0644
   notify:
+    - daemon-reload
     - restart json_exporter
 
 - name: create json_exporter configuration

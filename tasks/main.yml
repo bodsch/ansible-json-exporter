@@ -12,12 +12,16 @@
   tags:
     - json_exporter_install
   when:
-    - not stat_json_exporter_binary.stat.exists
+    - not stat_json_exporter_binary.stat.exists or
+      not stat_json_exporter_binary.stat.path == json_exporter_install_path ~ '/json_exporter'
 
 - name: install
   import_tasks: install.yaml
   tags:
     - json_exporter_install
+  when:
+    - not stat_json_exporter_binary.stat.exists or
+      not stat_json_exporter_binary.stat.path == json_exporter_install_path ~ '/json_exporter'
 
 - name: configure
   import_tasks: configure.yaml

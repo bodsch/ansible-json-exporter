@@ -23,7 +23,19 @@ json_exporter_defaults_config: []
 json_exporter_requirements:
   - iproute2
 
-json_exporter_defaults_directory: /etc/default
+json_exporter_defaults_release:
+  download_url: https://github.com/prometheus-community/json_exporter/releases
+  file: json_exporter-{{ json_exporter_version }}.linux-{{ go_arch }}.tar.gz
+
+json_exporter_config_directory: /etc/default
+
+json_exporter_defaults_logging:
+  level: warn
+  format: ""
+
+json_exporter_defaults_web:
+  listen_address: "127.0.0.1"
+  listen_port: "7979"
 
 systemd_lib_directory: /lib/systemd/system
 

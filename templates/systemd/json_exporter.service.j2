@@ -1,13 +1,13 @@
 {{ ansible_managed | comment }}
 
 [Unit]
-Description = Prometheus json Exporter
+Description = Prometheus json-exporter
 After       = network-online.target
 
 [Service]
 Type        = simple
 Environment = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
-EnvironmentFile = {{ json_exporter_defaults_directory }}/json_exporter
+EnvironmentFile = {{ json_exporter_config_directory }}/json_exporter
 
 User        = {{ json_exporter_system_user }}
 Group       = {{ json_exporter_system_group }}

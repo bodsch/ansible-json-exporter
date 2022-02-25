@@ -58,18 +58,9 @@ def get_vars(host):
     return result
 
 
-
-
-def test_hosts_file(host):
-    f = host.file('/etc/hosts')
-
-    assert f.exists
-    assert f.user == 'root'
-    assert f.group == 'root'
-
-
 @pytest.mark.parametrize("files", [
-    "/bin/json_exporter",
+    "/usr/bin/json_exporter",
+    "/etc/json_exporter/config.yml",
     "/etc/systemd/system/multi-user.target.wants/json_exporter.service"
 ])
 def test_files(host, files):

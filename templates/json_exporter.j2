@@ -6,7 +6,7 @@ GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}
 OPTIONS="
   --config.file={{ json_exporter_config_dir }}/config.yml \
   --log.level={{ json_exporter_logging.level | default('info') }} \
-  --web.listen-address={{ json_exporter_web.http_listen_address | default('127.0.0.1') }}:{{ json_exporter_web.http_listen_port | default('7979') }}
+  --web.listen-address={{ json_exporter_web.listen_address | default('127.0.0.1') }}:{{ json_exporter_web.listen_port | default('7979') }}
 "
 
 # > ./json_exporter --help

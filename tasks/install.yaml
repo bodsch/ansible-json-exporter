@@ -22,7 +22,14 @@
     group: "{{ json_exporter_system_group }}"
     remote_src: "{{ 'true' if json_exporter_direct_download else 'false' }}"
 
-- name: create link from json_exporter_{{ json_exporter_version }}
+- name: make files executable
+  file:
+    path: "{{ json_exporter_install_path }}/json_exporter"
+    mode: 0755
+    owner: "{{ json_exporter_system_user }}"
+    group: "{{ json_exporter_system_group }}"
+
+- name: create link to binary
   file:
     src: "{{ json_exporter_install_path }}/json_exporter"
     dest: /usr/bin/json_exporter
