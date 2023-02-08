@@ -2,7 +2,7 @@
 
 - name: Ensure json_exporter is enabled on boot
   become: true
-  service:
+  ansible.builtin.service:
     name: json_exporter
     enabled: true
     state: started

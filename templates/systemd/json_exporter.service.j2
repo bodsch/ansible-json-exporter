@@ -1,22 +1,23 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 {{ ansible_managed | comment }}
 
 [Unit]
-Description = Prometheus json-exporter
-After       = network-online.target
+Description       = Prometheus json-exporter, scrapes remote JSON by JSONPath
+After             = network-online.target
 
 [Service]
-Type        = simple
-Environment = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
-EnvironmentFile = {{ json_exporter_config_directory }}/json_exporter
+Type              = simple
+EnvironmentFile   = {{ json_exporter_defaults_directory }}/json_exporter
 
-User        = {{ json_exporter_system_user }}
-Group       = {{ json_exporter_system_group }}
+User              = {{ json_exporter_system_user }}
+Group             = {{ json_exporter_system_group }}
 
-ExecReload  = /bin/kill -HUP $MAINPID
-ExecStart   = /usr/bin/json_exporter $OPTIONS
+ExecReload        = /bin/kill -HUP $MAINPID
+ExecStartPre      = /usr/bin/json_exporter --config.check --log.level debug --config.file {{ json_exporter_service.config.file }}
+ExecStart         = /usr/bin/json_exporter $OPTIONS
 
-SyslogIdentifier = json_exporter
-Restart     = always
+SyslogIdentifier  = json_exporter
+Restart           = always
 
 [Install]
-WantedBy    = multi-user.target
+WantedBy          = multi-user.target

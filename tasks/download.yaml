@@ -1,11 +1,13 @@
 ---
 
-- name: download json_exporter binary to local folder
+- name: download json_exporter binary archive
   become: false
   delegate_to: "{{ json_exporter_delegate_to }}"
-  get_url:
+  run_once: "{{ 'false' if json_exporter_direct_download else 'true' }}"
+  ansible.builtin.get_url:
     url: "{{ json_exporter_release.download_url }}/download/v{{ json_exporter_version }}/{{ json_exporter_release.file }}"
-    dest: "{{ json_exporter_local_tmp_directory }}/json_exporter-{{ json_exporter_version }}.tar.gz"
+    dest: "{{ json_exporter_local_tmp_directory }}/{{ json_exporter_release.file }}"
+    mode: 0640
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
@@ -15,8 +17,9 @@
 - name: extract json_exporter archive
   become: false
   delegate_to: "{{ json_exporter_delegate_to }}"
-  unarchive:
-    src: "{{ json_exporter_local_tmp_directory }}/json_exporter-{{ json_exporter_version }}.tar.gz"
+  run_once: "{{ 'false' if json_exporter_direct_download else 'true' }}"
+  ansible.builtin.unarchive:
+    src: "{{ json_exporter_local_tmp_directory }}/{{ json_exporter_release.file }}"
     dest: "{{ json_exporter_local_tmp_directory }}/"
     copy: false
 

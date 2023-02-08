@@ -3,6 +3,29 @@
 
 This ansible role installs and configure [json_exporter](https://github.com/prometheus-community/json_exporter)
 
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-json-exporter/main.yml?branch=main)][ci]
+[![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-json-exporter)][issues]
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-json-exporter)][releases]
+[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
+
+[ci]: https://github.com/bodsch/ansible-json-exporter/actions
+[issues]: https://github.com/bodsch/ansible-json-exporter/issues?q=is%3Aopen+is%3Aissue
+[releases]: https://github.com/bodsch/ansible-json-exporter/releases
+[quality]: https://galaxy.ansible.com/bodsch/json_exporter
+
+
+If `latest` is set for `json_exporter_version`, the role tries to install the latest release version.  
+**Please use this with caution, as incompatibilities between releases may occur!**
+
+The binaries are installed below `/usr/local/bin/json_exporter/${json_exporter_version}` and later linked to `/usr/bin`. 
+This should make it possible to downgrade relatively safely.
+
+The json_exporter archive is stored on the Ansible controller, unpacked and then the binaries are copied to the target system.
+The cache directory can be defined via the environment variable `CUSTOM_LOCAL_TMP_DIRECTORY`. 
+By default it is `${HOME}/.cache/ansible/json_exporter`.
+If this type of installation is not desired, the download can take place directly on the target system. 
+However, this must be explicitly activated by setting `json_exporter_direct_download` to `true`.
+
 
 ## Requirements & Dependencies
 
@@ -16,16 +39,11 @@ Tested on
 * Debian based
     - Debian 10 / 11
     - Ubuntu 20.10
-* RedHat based
-    - CentOS 8 (**not longer supported**)
-    - Alma Linux 8
-    - Rocky Linux 8
-    - Oracle Linux 8
 
 ## Usage
 
 ```
-json_exporter_version: '0.4.0'
+json_exporter_version: '0.5.0'
 
 json_exporter_release: {}
 
@@ -35,32 +53,24 @@ json_exporter_config_dir: /etc/json_exporter
 
 json_exporter_direct_download: false
 
-json_exporter_logging: {}
-
-json_exporter_web: {}
+json_exporter_service: {}
 
 json_exporter_config: []
 ```
 
-### `json_exporter_logging`
+### `json_exporter_service`
 
 #### defaults
 
 ```yaml
-json_exporter_logging:
-  level: warn
-  format: ""
-```
-
-
-### `json_exporter_web`
-
-#### defaults
-
-```yaml
-json_exporter_web:
-  listen_address: "127.0.0.1"
-  listen_port: "7979"
+json_exporter_service:
+  config:
+    file: "{{ json_exporter_config_dir }}/config.yml"
+  log:
+    level: info
+    format: ""
+  web:
+    listen_address: "0.0.0.0:7979"
 ```
 
 
@@ -77,19 +87,19 @@ json_exporter_config: []
 ```yaml
 json_exporter_config:
   - name: example_global_value
-    path: "{ .counter }"
     help: Example of a top-level global value scrape in the json
+    path: "{ .counter }"
     labels:
-      environment: beta # static label
-      location: "planet-{.location}"          # dynamic label
+      environment: beta                   # static label
+      location: "planet-{.location}"      # dynamic label
 
   - name: mgob_backup
-    type: object
     help: MongoDB Backup
+    type: object
     path: "{}"
     labels:
-      environment: DEV      # static label
-      id: '{[].plan}'       # dynamic label
+      environment: DEV                    # static label
+      id: '{[].plan}'                     # dynamic label
     values:
       next_run: "{[].next_run}"
       last_run: "{[].last_run}"

@@ -1,7 +1,7 @@
 ---
 
 - name: create json_exporter configuration directory
-  file:
+  ansible.builtin.file:
     path: "{{ json_exporter_config_dir }}"
     state: directory
     owner: root
@@ -9,16 +9,16 @@
     mode: 0770
 
 - name: create systemd json_exporter config
-  template:
+  ansible.builtin.template:
     src: json_exporter.j2
-    dest: "{{ json_exporter_config_directory }}/json_exporter"
+    dest: "{{ json_exporter_defaults_directory }}/json_exporter"
     mode: 0644
   notify:
-    - daemon-reload
+#    - daemon-reload
     - restart json_exporter
 
 - name: create json_exporter configuration
-  template:
+  ansible.builtin.template:
     src: "config.yml.j2"
     dest: "{{ json_exporter_config_dir }}/config.yml"
     force: true
@@ -30,6 +30,6 @@
     - restart json_exporter
 
 - name: flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 ...

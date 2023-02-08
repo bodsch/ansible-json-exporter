@@ -1,7 +1,7 @@
 ---
 
 - name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       paths:
@@ -19,11 +19,11 @@
       skip: true
 
 - name: update package cache
-  package:
+  ansible.builtin.package:
     update_cache: true
 
 - name: define delegate instance for download handling
-  set_fact:
+  ansible.builtin.set_fact:
     json_exporter_delegate_to: "{{ ansible_host }}"
     json_exporter_local_tmp_directory: "{{
         lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
@@ -32,36 +32,37 @@
     - json_exporter_direct_download
 
 - name: install dependency
-  package:
+  ansible.builtin.package:
     name: "{{ json_exporter_requirements }}"
     state: present
+  when:
+    - json_exporter_requirements | default([]) | count > 0
 
 - name: detect installed json_exporter binary
-  stat:
+  ansible.builtin.stat:
     path: "{{ json_exporter_install_path }}/json_exporter"
   register: stat_json_exporter_binary
 
 - name: create download directory
   become: false
   delegate_to: "{{ json_exporter_delegate_to }}"
-  file:
+  ansible.builtin.file:
     path: "{{ json_exporter_local_tmp_directory }}"
     state: directory
     mode: 0750
-  when:
-    - not stat_json_exporter_binary.stat.exists or
-      not stat_json_exporter_binary.stat.path == json_exporter_install_path ~ '/json_exporter'
 
 - name: user and group handling
+  when:
+    - json_exporter_system_user != "root"
   block:
     - name: create json_exporter group
-      group:
+      ansible.builtin.group:
         name: "{{ json_exporter_system_group }}"
         state: present
         system: true
 
     - name: create json_exporter user
-      user:
+      ansible.builtin.user:
         name: "{{ json_exporter_system_user }}"
         groups: "{{ json_exporter_system_group }}"
         append: true
@@ -69,44 +70,26 @@
         system: true
         createhome: false
         home: /nonexistent
-  when:
-    - json_exporter_system_user != "root"
 
 - name: create install directory
-  file:
+  ansible.builtin.file:
     path: "{{ json_exporter_install_path }}"
     state: directory
     owner: "{{ json_exporter_system_user }}"
     group: "{{ json_exporter_system_group }}"
     mode: 0755
 
-- name: fix directory rights for {{ json_exporter_install_path | dirname }}
-  file:
-    path: "{{ json_exporter_install_path | dirname }}"
+- name: create ansible local facts directory
+  ansible.builtin.file:
+    dest: /etc/ansible/facts.d
     state: directory
-    owner: "{{ json_exporter_system_user }}"
-    group: "{{ json_exporter_system_group }}"
-    mode: 0755
-    recurse: true
+    owner: root
+    group: root
+    mode: 0775
 
-- name: merge json_exporter release configuration between defaults and custom
-  set_fact:
-    json_exporter_release: "{{ json_exporter_defaults_release |
-      combine( json_exporter_release, recursive=True ) }}"
-
-- name: merge json_exporter logging configuration between defaults and custom
-  set_fact:
-    json_exporter_logging: "{{ json_exporter_defaults_logging |
-      combine( json_exporter_logging, recursive=True ) }}"
-
-- name: merge json_exporter web configuration between defaults and custom
-  set_fact:
-    json_exporter_web: "{{ json_exporter_defaults_web |
-      combine( json_exporter_web, recursive=True ) }}"
-
-# - name: merge json_exporter configuration between defaults and custom
-#   set_fact:
-#     json_exporter_config: "{{ json_exporter_defaults_config |
-#       combine( json_exporter_config, recursive=True ) }}"
+- name: merge json_exporter configuration between defaults and custom
+  ansible.builtin.set_fact:
+    json_exporter_service: "{{ json_exporter_defaults_service | combine(json_exporter_service, recursive=True) }}"
+    json_exporter_release: "{{ json_exporter_defaults_release | combine(json_exporter_release, recursive=True) }}"
 
 ...
