@@ -8,7 +8,7 @@
   when:
     - ansible_service_mgr == 'systemd'
 
-- name: verify configuration
+- name: verify configuration  # noqa no-changed-when
   become: true
   ansible.builtin.command: |
     json_exporter \
