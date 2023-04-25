@@ -42,11 +42,11 @@
       ansible.builtin.fail:
         msg: "The binary json_exporter was not found!"
 
-- name: create local facts
-  ansible.builtin.template:
-    src: ansible_facts.j2
-    dest: /etc/ansible/facts.d/json_exporter.fact
-    mode: 0755
+- name: create custom fact file
+  bodsch.core.facts:
+    name: json_exporter
+    facts:
+      version: "{{ json_exporter_version }}"
 
 - name: systemd
   when:
