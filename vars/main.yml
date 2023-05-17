@@ -22,7 +22,7 @@ json_exporter_defaults_service:
     level: info
     format: ""
   web:
-    listen_address: "0.0.0.0:7979"
+    listen_address: "127.0.0.1:7979"
 
 json_exporter_defaults_directory: /etc/default
 

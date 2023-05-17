@@ -1,7 +1,8 @@
 ---
 
 json_exporter_service:
-  level: warn
+  log:
+    level: warn
 
 json_exporter_config:
   - name: example_global_value
