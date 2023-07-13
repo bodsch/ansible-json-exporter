@@ -3,6 +3,9 @@
 
 This ansible role installs and configure [json_exporter](https://github.com/prometheus-community/json_exporter)
 
+> Further development of this Ansible role has been moved to Collection [bodsch.prometheus](https://github.com/bodsch/ansible-collection-prometheus).
+> **This repository will therefore no longer be actively maintained.**
+
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-json-exporter/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-json-exporter)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-json-exporter)][releases]
